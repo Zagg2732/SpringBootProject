@@ -1,6 +1,7 @@
 package org.ex.study.web;
 
 import lombok.RequiredArgsConstructor;
+import org.ex.study.config.auth.dto.SessionDto;
 import org.ex.study.service.posts.PostsService;
 import org.ex.study.web.dto.PostsResponseDto;
 import org.springframework.stereotype.Controller;
@@ -8,16 +9,24 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.servlet.http.HttpSession;
+
 @RequiredArgsConstructor
 @Controller
 public class IndexController {
 
     private final PostsService postsService;
+    private final HttpSession httpSession;
 
     @GetMapping("/")
     public String index(Model model) {
 
         model.addAttribute("posts", postsService.findAllDesc());
+
+        SessionDto user = (SessionDto) httpSession.getAttribute("user");
+        if(user != null) {
+            model.addAttribute("userName", user.getName());
+        }
 
         return "index";
     }
